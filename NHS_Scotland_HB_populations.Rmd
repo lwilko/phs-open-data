@@ -2,7 +2,7 @@
 title: "NHS Scotland Health Board population sizes"
 author: "Levin Wilkinson"
 date: "2023-03-01"
-output: rmarkdown::github_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -50,7 +50,7 @@ pop_data_2021 <- pop_data %>%
   mutate(Population_mils = Population/1000000) # store population in millions
 ```
 
-```{r plot-2021, echo=FALSE, out.width = "100%"}
+```{r plot-2021, echo=FALSE}
 # Plot bar chart showing population sizes of health boards
 ggplot(data = pop_data_2021, mapping = aes(x = HB_name, y = Population_mils)) +
   geom_bar(stat = "identity") +
