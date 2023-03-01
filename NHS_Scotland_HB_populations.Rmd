@@ -1,0 +1,65 @@
+---
+title: "NHS Scotland Health Board population sizes"
+author: "Levin Wilkinson"
+date: "2023-03-01"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+### Run these lines to install the necessary packages
+# install.packages("tidyverse")
+# install.packages("ggplot2")
+
+### Import packages
+library(tidyverse)
+library(ggplot2)
+```
+
+## What is this document?
+This is an R Markdown document. It serves as an interactive document for
+exploring the [Health Boards (2019) Population Estimates](https://www.opendata.nhs.scot/dataset/population-estimates/resource/27a72cc8-d6d8-430c-8b4f-3109a9ceadb1) dataset from [Public Health Scotland](https://publichealthscotland.scot).
+
+For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+## Data used
+The dataset used for this analysis is the [Health Boards (2019) Population Estimates](https://www.opendata.nhs.scot/dataset/population-estimates/resource/27a72cc8-d6d8-430c-8b4f-3109a9ceadb1) dataset from [Public Health Scotland](https://publichealthscotland.scot). This dataset contains estimates of the population sizes of each health board in Scotland, based on [2019 census data](https://www.nrscotland.gov.uk/files//statistics/rgar/2019/Pages/pop-sec.html) from [National Records of Scotland](https://www.nrscotland.gov.uk).
+
+```{r read-data}
+# Read in Public Health Scotland health board code data
+hb_codes <- read.csv("https://www.opendata.nhs.scot/dataset/9f942fdb-e59e-44f5-b534-d6e17229cc7b/resource/652ff726-e676-4a20-abda-435b98dd7bdc/download/hb14_hb19.csv")
+
+# Read in Public Health Scotland health board data for 1981-2021
+pop_data <- read.csv("https://www.opendata.nhs.scot/dataset/7f010430-6ce1-4813-b25c-f7f335bdc4dc/resource/27a72cc8-d6d8-430c-8b4f-3109a9ceadb1/download/hb2019_pop_est_15072022.csv") %>% 
+  filter(Sex == "All") %>% 
+  rename(Population = "AllAges") %>% 
+  left_join(hb_codes) %>% 
+  mutate(HB_name = case_when(is.na(HBName) ~ "Scotland",
+                             TRUE ~ str_sub(HBName, 5, -1))) %>% # remove "NHS"
+  select(Year, HB_name, Population)
+```
+
+## Population estimates
+
+```{r wrangle-2021, echo=TRUE}
+# Wrangle data to plot health board (HB) populations in 2021
+pop_data_2021 <- pop_data %>% 
+  filter(Year == 2021,
+         HB_name != "Scotland") %>% # get 2021 data (excluding all-Scotland)
+  mutate(Population_mils = Population/1000000) # store population in millions
+```
+
+```{r plot-2021, echo=FALSE, out.width = "100%"}
+# Plot bar chart showing population sizes of health boards
+ggplot(data = pop_data_2021, mapping = aes(x = HB_name, y = Population_mils)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = prettyNum(Population,big.mark=",",scientific=FALSE), vjust = -0.35), size = 2) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1)) +
+  labs(x = "Health board",
+       y = "Population (million)")
+```
+```{r 2021-table, echo = TRUE}
+pop_data_2021
+```
