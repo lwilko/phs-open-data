@@ -2,7 +2,7 @@
 title: "NHS Scotland Health Board population sizes"
 author: "Levin Wilkinson"
 date: "2023-03-01"
-output: html_document
+output: rmarkdown::github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -18,7 +18,7 @@ library(ggplot2)
 ```
 
 ## What is this document?
-This is an R Markdown document. It serves as an interactive document for
+This is an R Markdown document. It serves as a notebook for
 exploring the [Health Boards (2019) Population Estimates](https://www.opendata.nhs.scot/dataset/population-estimates/resource/27a72cc8-d6d8-430c-8b4f-3109a9ceadb1) dataset from [Public Health Scotland](https://publichealthscotland.scot).
 
 For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
